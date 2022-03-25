@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = BuilderConfigurator.GetConfigurationSettings(builder);
+builder.Services.AddScoped(_ => settings);
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(settings.DatabaseConnectionString));
 builder.Services.AddIdentity<User, IdentityRole>(options =>

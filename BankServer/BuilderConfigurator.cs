@@ -22,13 +22,12 @@ public static class BuilderConfigurator
             DatabaseConnectionString = databaseConnectionString,
             JwtAuthValidAudience = configuration["JwtAuth:ValidAudience"],
             JwtAuthValidIssuer = configuration["JwtAuth:ValidIssuer"],
-            JwtAuthSecretKey = configuration["JwtAuth:Secret"]
+            JwtAuthSecretKey = configuration["JwtAuth:SecretKey"]
         };
     }
 
     public static void ConfigureJwt(WebApplicationBuilder builder, Settings settings)
     {
-        var configuration = builder.Configuration;
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -42,8 +41,8 @@ public static class BuilderConfigurator
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidAudience = configuration["JwtAuth:ValidAudience"],
-                ValidIssuer = configuration["JwtAuth:ValidIssuer"],
+                ValidAudience = settings.JwtAuthValidAudience,
+                ValidIssuer = settings.JwtAuthValidIssuer,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.JwtAuthSecretKey))
             };
         });
