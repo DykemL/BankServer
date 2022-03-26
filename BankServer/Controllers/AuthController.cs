@@ -1,11 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using BankServer.Controllers.Types;
-using BankServer.Models.DbEntities;
+﻿using BankServer.Controllers.Types;
 using BankServer.Models.DtoModels;
-using BankServer.Models.Roles;
-using BankServer.Services;
-using Microsoft.AspNetCore.Identity;
+using BankServer.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankServer.Controllers;
@@ -14,72 +9,48 @@ namespace BankServer.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<User> userManager;
-    private readonly RoleManager<IdentityRole> roleManager;
-    private readonly JwtSecurityService jwtSecurityService;
+    private readonly IAuthService authService;
 
-    public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, JwtSecurityService jwtSecurityService)
-    {
-        this.userManager = userManager;
-        this.roleManager = roleManager;
-        this.jwtSecurityService = jwtSecurityService;
-    }
+    public AuthController(IAuthService authService)
+        => this.authService = authService;
 
     [HttpPost]
     [Route("Login")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        var user = await userManager.FindByNameAsync(model.Username);
-        if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+        var loginResult = await authService.Login(model);
+        if (loginResult == null)
         {
-            var userRoles = await userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new(ClaimTypes.Name, user.UserName),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            authClaims.Add(new Claim(ClaimTypes.Role, "User"));
-            var token = jwtSecurityService.GetToken(authClaims);
-
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo
-            });
+            return Unauthorized();
         }
 
-        return Unauthorized();
+        return Ok(new
+        {
+            token = loginResult.Token,
+            expiration = loginResult.ExpirationDate
+        });
     }
 
     [HttpPost]
     [Route("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
-        var userExists = await userManager.FindByNameAsync(model.Username);
-        if (userExists != null)
+        var registerStatus = await authService.Register(model);
+        if (registerStatus == RegisterStatus.AlreadyExists)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new Response(ResponseStatus.Error, "Пользователь уже существует"));
         }
 
-        var user = new User()
-        {
-            UserName = model.Username,
-            Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString()
-        };
-        var result = await userManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
+        if (registerStatus == RegisterStatus.Error)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new Response(ResponseStatus.Error, "Не удалось зарегистрировать пользователя"));
         }
 
-        return Ok(new Response(ResponseStatus.Success, "Пользователь успешно зарегистрирован"));
+        if (registerStatus == RegisterStatus.Success)
+        {
+            return Ok(new Response(ResponseStatus.Success, "Пользователь успешно зарегистрирован"));
+        }
+
+        return Ok(new Response(ResponseStatus.Error, "Неизвестная ошибка"));
     }
 }

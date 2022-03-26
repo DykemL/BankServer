@@ -5,8 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BankServer.Services;
 
-public class JwtSecurityService
+public class JwtSecurityService : IJwtSecurityService
 {
+    private readonly TimeSpan timeToLive = TimeSpan.FromHours(3);
+
     private readonly Settings settings;
 
     public JwtSecurityService(Settings settings)
@@ -19,7 +21,7 @@ public class JwtSecurityService
         var token = new JwtSecurityToken(
             settings.JwtAuthValidIssuer,
             settings.JwtAuthValidAudience,
-            expires: DateTime.Now.AddHours(3),
+            expires: DateTime.Now.Add(timeToLive),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );

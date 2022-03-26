@@ -25,7 +25,7 @@ BuilderConfigurator.ConfigureJwt(builder, settings);
 
 builder.Services.AddEndpointsApiExplorer();
 BuilderConfigurator.ConfigureSwagger(builder);
-BuilderConfigurator.ConfigureContainer(builder);
+ContainerConfigurator.Configure(builder);
 
 var app = builder.Build();
 app.UseSwagger();

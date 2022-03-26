@@ -71,10 +71,4 @@ public static class BuilderConfigurator
             options.DescribeAllParametersInCamelCase();
         });
     }
-
-    public static void ConfigureContainer(WebApplicationBuilder builder)
-    {
-        var services = builder.Services;
-        services.AddScoped<JwtSecurityService>();
-    }
 }
