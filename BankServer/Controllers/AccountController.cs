@@ -28,7 +28,11 @@ public class AccountController : ControllerBase
     {
         var userId = User.GetId();
         var rubbleCurrency = await currencyService.GetCurrency(currencyName);
-        await accountService.AddNewEmptyAccountAsync(userId, rubbleCurrency!);
+        var wasAdded = await accountService.TryAddNewEmptyAccountAsync(userId, rubbleCurrency!);
+        if (!wasAdded)
+        {
+            NotFound();
+        }
         return Ok();
     }
 

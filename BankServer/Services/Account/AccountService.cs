@@ -17,13 +17,13 @@ public class AccountService
         this.currencyService = currencyService;
     }
 
-    public async Task AddNewEmptyAccountAsync(Guid userId, Currency currency)
+    public async Task<bool> TryAddNewEmptyAccountAsync(Guid userId, Currency currency)
     {
         var userIdString = userId.ToString();
         var user = await appDbContext.Users.FindAsync(userIdString);
         if (user == null)
         {
-            throw new NotFoundException();
+            return false;
         }
         user.Accounts.Add(new Models.DbEntities.Account()
         {
@@ -31,6 +31,7 @@ public class AccountService
             Currency = currency
         });
         await appDbContext.SaveChangesAsync();
+        return true;
     }
 
     public async Task<AccountInfo[]> GetAccounts(Guid userId)
