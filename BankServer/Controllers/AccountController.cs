@@ -1,7 +1,9 @@
-﻿using BankServer.Extentions;
+﻿using BankServer.Controllers.Types;
+using BankServer.Extentions;
 using BankServer.Models.Roles;
 using BankServer.Providers;
 using BankServer.Services;
+using BankServer.Services.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,5 +39,24 @@ public class AccountController : ControllerBase
         var userId = User.GetId();
         var accounts = await accountService.GetAccounts(userId);
         return Ok(accounts);
+    }
+
+    [HttpPatch]
+    [Route("TransferMoney")]
+    public async Task<IActionResult> TransferMoneyAsync(Guid accountFromId, Guid accountToId, decimal amount)
+    {
+        var currentUserAccounts = await accountService.GetAccounts(User.GetId());
+        if (!currentUserAccounts.Select(x => x.AccountId).Contains(accountFromId))
+        {
+            return BadRequest(new Response(ResponseStatus.Forbidden, "Можно переводить деньги только со своих счетов"));
+        }
+
+        var transferResult = await accountService.TryTransferMoneyFromToAccount(amount, accountFromId, accountToId);
+        if (!transferResult)
+        {
+            return Problem("Произошла проблема с переводом. Перевод не выполнен");
+        }
+
+        return Ok();
     }
 }

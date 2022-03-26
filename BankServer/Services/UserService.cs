@@ -14,7 +14,7 @@ public class UserService
 
     public async Task<UserInfo> GetUser(Guid userId)
     {
-        var user = await userManager.Users.FirstOrDefaultAsync(x => x.Id == userId.ToString());
+        var user = await userManager.Users.SingleOrDefaultAsync(x => x.Id == userId.ToString());
         return new UserInfo()
         {
             Id = user.Id,

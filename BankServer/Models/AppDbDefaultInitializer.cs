@@ -78,7 +78,7 @@ public class AppDbInitializer
 
     private async Task TryAddCurrency(Currency? newCurrency)
     {
-        var currency = await appDbContext.Currencies.FirstOrDefaultAsync(x => x.Name == newCurrency.Name);
+        var currency = await appDbContext.Currencies.SingleOrDefaultAsync(x => x.Name == newCurrency.Name);
         if (currency != null)
         {
             return;

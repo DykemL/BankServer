@@ -1,5 +1,6 @@
 ﻿using BankServer.Models.Roles;
 using BankServer.Services;
+using BankServer.Services.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,19 +22,19 @@ public class AdminController : ControllerBase
 
     [HttpGet]
     [Route("GetUser")]
-    public async Task<IActionResult> GetUser(Guid userId)
+    public async Task<IActionResult> GetUserAsync(Guid userId)
         => Ok(await userService.GetUser(userId));
 
     [HttpGet]
     [Route("GetAllUsers")]
-    public async Task<IActionResult> GetAllUsers()
+    public async Task<IActionResult> GetAllUsersAsync()
         => Ok(await userService.GetAllUsers());
 
     [HttpGet]
-    [Route("TopUpAccount")]
-    public async Task<IActionResult> TopUpAccountAsync(Guid accountId, decimal amount)
+    [Route("AddMoneyToAccount")]
+    public async Task<IActionResult> AddMoneyToAccountAsync(Guid accountId, decimal amount)
     {
-        await accountService.TopUpAccount(accountId, amount);
+        await accountService.AddMoneyToAccount(accountId, amount);
         return Ok();
     }
 }
