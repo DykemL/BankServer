@@ -11,6 +11,8 @@ public static class ContainerConfigurator
         var services = builder.Services;
         services.AddScoped<IJwtSecurityService, JwtSecurityService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<AccountService>();
+
         services.AddScoped<AppDbInitializer>();
     }
 }

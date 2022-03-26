@@ -1,14 +1,22 @@
-﻿using BankServer.Models.Roles;
+﻿using BankServer.Models.DtoModels;
+using BankServer.Models.Roles;
+using BankServer.Services.Auth;
 using Microsoft.AspNetCore.Identity;
 
 namespace BankServer.Models;
 
 public class AppDbInitializer
 {
+    private readonly IAuthService authService;
     private readonly RoleManager<IdentityRole> roleManager;
+    private readonly Settings settings;
 
-    public AppDbInitializer(RoleManager<IdentityRole> roleManager)
-        => this.roleManager = roleManager;
+    public AppDbInitializer(IAuthService authService, RoleManager<IdentityRole> roleManager, Settings settings)
+    {
+        this.authService = authService;
+        this.roleManager = roleManager;
+        this.settings = settings;
+    }
 
     public static async Task InitializeAsync(WebApplication builder)
     {
@@ -22,6 +30,7 @@ public class AppDbInitializer
     {
         await TryAddRoleAsync(UserRoles.User).ConfigureAwait(false);
         await TryAddRoleAsync(UserRoles.Admin).ConfigureAwait(false);
+        await TryCreateAdmin();
     }
 
     private async Task TryAddRoleAsync(string roleName)
@@ -30,5 +39,16 @@ public class AppDbInitializer
         {
             await roleManager.CreateAsync(new IdentityRole(roleName)).ConfigureAwait(false);
         }
+    }
+
+    private async Task TryCreateAdmin()
+    {
+        var registerDto = new RegisterDto()
+        {
+            Username = settings.AdminLogin,
+            Email = settings.AdminEmail,
+            Password = settings.AdminPassword
+        };
+        await authService.RegisterAsync(registerDto, new[] { UserRoles.User, UserRoles.Admin });
     }
 }

@@ -22,7 +22,10 @@ public static class BuilderConfigurator
             DatabaseConnectionString = databaseConnectionString,
             JwtAuthValidAudience = configuration["JwtAuth:ValidAudience"],
             JwtAuthValidIssuer = configuration["JwtAuth:ValidIssuer"],
-            JwtAuthSecretKey = configuration["JwtAuth:SecretKey"]
+            JwtAuthSecretKey = configuration["JwtAuth:SecretKey"],
+            AdminLogin = configuration["AuthData:AdminLogin"],
+            AdminEmail = configuration["AuthData:AdminPassword"],
+            AdminPassword = configuration["AuthData:AdminPassword"]
         };
     }
 
