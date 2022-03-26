@@ -1,12 +1,14 @@
 ﻿using System.Text;
-using BankServer.Services;
+using BankServer.Models;
+using BankServer.Models.DbEntities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace BankServer;
 
-public static class BuilderConfigurator
+public static class ApplicationConfigurator
 {
     private const string AuthHeader = "Authorization";
     private const string AuthType = "Bearer";
@@ -29,6 +31,20 @@ public static class BuilderConfigurator
         };
     }
 
+    public static void ConfigureIdentity(WebApplicationBuilder builder)
+    {
+        builder.Services.AddIdentity<User, IdentityRole>(options =>
+               {
+                   options.Password.RequireDigit = false;
+                   options.Password.RequireLowercase = false;
+                   options.Password.RequireUppercase = false;
+                   options.Password.RequiredLength = 0;
+                   options.Password.RequireNonAlphanumeric = false;
+               })
+               .AddEntityFrameworkStores<AppDbContext>()
+               .AddDefaultTokenProviders();
+    }
+
     public static void ConfigureJwt(WebApplicationBuilder builder, Settings settings)
     {
         builder.Services.AddAuthentication(options =>
@@ -46,7 +62,7 @@ public static class BuilderConfigurator
                 ValidateAudience = true,
                 ValidAudience = settings.JwtAuthValidAudience,
                 ValidIssuer = settings.JwtAuthValidIssuer,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.JwtAuthSecretKey))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.JwtAuthSecretKey!))
             };
         });
     }
