@@ -1,5 +1,6 @@
 ﻿using BankServer.Controllers.Types;
 using BankServer.Models.DtoModels;
+using BankServer.Models.Roles;
 using BankServer.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ public class AuthController : ControllerBase
     [Route("Login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginDto model)
     {
-        var loginResult = await authService.LoginAsync(model).ConfigureAwait(false);
+        var loginResult = await authService.LoginAsync(model);
         if (loginResult == null)
         {
             return Unauthorized();
@@ -35,7 +36,7 @@ public class AuthController : ControllerBase
     [Route("Register")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterDto model)
     {
-        var registerStatus = await authService.RegisterAsync(model).ConfigureAwait(false);
+        var registerStatus = await authService.RegisterAsync(model, new [] { UserRoles.User });
         if (registerStatus == RegisterStatus.AlreadyExists)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new Response(ResponseStatus.Error, "Пользователь уже существует"));

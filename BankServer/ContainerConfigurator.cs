@@ -12,6 +12,8 @@ public static class ContainerConfigurator
         services.AddScoped<IJwtSecurityService, JwtSecurityService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<AccountService>();
+        services.AddScoped<CurrencyService>();
+        services.AddScoped<UserService>();
 
         services.AddScoped<AppDbInitializer>();
     }

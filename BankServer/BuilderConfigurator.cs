@@ -24,7 +24,7 @@ public static class BuilderConfigurator
             JwtAuthValidIssuer = configuration["JwtAuth:ValidIssuer"],
             JwtAuthSecretKey = configuration["JwtAuth:SecretKey"],
             AdminLogin = configuration["AuthData:AdminLogin"],
-            AdminEmail = configuration["AuthData:AdminPassword"],
+            AdminEmail = configuration["AuthData:AdminEmail"],
             AdminPassword = configuration["AuthData:AdminPassword"]
         };
     }

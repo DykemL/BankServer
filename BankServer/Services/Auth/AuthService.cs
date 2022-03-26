@@ -2,9 +2,7 @@
 using System.Security.Claims;
 using BankServer.Models.DbEntities;
 using BankServer.Models.DtoModels;
-using BankServer.Models.Roles;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BankServer.Services.Auth;
 
@@ -21,13 +19,13 @@ public class AuthService : IAuthService
 
     public async Task<LoginResult?> LoginAsync(LoginDto model)
     {
-        var user = await userManager.FindByNameAsync(model.Username).ConfigureAwait(false);
+        var user = await userManager.FindByNameAsync(model.Username);
         if (user == null)
         {
             return null;
         }
 
-        if (!await userManager.CheckPasswordAsync(user, model.Password).ConfigureAwait(false))
+        if (!await userManager.CheckPasswordAsync(user, model.Password))
         {
             return null;
         }
@@ -55,9 +53,6 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<RegisterStatus> RegisterAsync(RegisterDto model)
-        => await RegisterAsync(model, new[] { UserRoles.User }).ConfigureAwait(false);
-
     public async Task<RegisterStatus> RegisterAsync(RegisterDto model, string[] roles)
     {
         var userExists = await userManager.FindByNameAsync(model.Username);
@@ -77,7 +72,7 @@ public class AuthService : IAuthService
             return RegisterStatus.Error;
         }
 
-        await userManager.AddToRolesAsync(user, roles).ConfigureAwait(false);
+        await userManager.AddToRolesAsync(user, roles);
 
         return RegisterStatus.Success;
     }

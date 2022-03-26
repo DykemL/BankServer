@@ -9,6 +9,8 @@ public class Account : DbEntity
     [Required]
     public decimal Money { get; set; }
     [Required]
+    public Currency Currency { get; set; }
+    [Required]
     public DateTime CreatedDateTime { get; set; }
 
     public Account()
