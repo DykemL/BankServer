@@ -5,6 +5,6 @@ namespace BankServer.Services.Auth;
 
 public interface IAuthService
 {
-    Task<LoginResult?> Login([FromBody] LoginDto model);
-    Task<RegisterStatus> Register([FromBody] RegisterDto model);
+    Task<LoginResult?> LoginAsync([FromBody] LoginDto model);
+    Task<RegisterStatus> RegisterAsync([FromBody] RegisterDto model);
 }

@@ -1,4 +1,5 @@
-﻿using BankServer.Services;
+﻿using BankServer.Models;
+using BankServer.Services;
 using BankServer.Services.Auth;
 
 namespace BankServer;
@@ -10,5 +11,6 @@ public static class ContainerConfigurator
         var services = builder.Services;
         services.AddScoped<IJwtSecurityService, JwtSecurityService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<AppDbInitializer>();
     }
 }

@@ -18,7 +18,7 @@ public class AuthController : ControllerBase
     [Route("Login")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        var loginResult = await authService.Login(model);
+        var loginResult = await authService.LoginAsync(model).ConfigureAwait(false);
         if (loginResult == null)
         {
             return Unauthorized();
@@ -35,7 +35,7 @@ public class AuthController : ControllerBase
     [Route("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
-        var registerStatus = await authService.Register(model);
+        var registerStatus = await authService.RegisterAsync(model).ConfigureAwait(false);
         if (registerStatus == RegisterStatus.AlreadyExists)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new Response(ResponseStatus.Error, "Пользователь уже существует"));

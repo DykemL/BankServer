@@ -39,4 +39,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await AppDbInitializer.InitializeAsync(app).ConfigureAwait(false);
 app.Run();

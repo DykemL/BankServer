@@ -10,18 +10,25 @@ namespace BankServer.Services.Auth;
 public class AuthService : IAuthService
 {
     private readonly UserManager<User> userManager;
+    private readonly RoleManager<IdentityRole> roleManager;
     private readonly IJwtSecurityService jwtSecurityService;
 
-    public AuthService(UserManager<User> userManager, IJwtSecurityService jwtSecurityService)
+    public AuthService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IJwtSecurityService jwtSecurityService)
     {
         this.userManager = userManager;
+        this.roleManager = roleManager;
         this.jwtSecurityService = jwtSecurityService;
     }
 
-    public async Task<LoginResult?> Login([FromBody] LoginDto model)
+    public async Task<LoginResult?> LoginAsync([FromBody] LoginDto model)
     {
-        var user = await userManager.FindByNameAsync(model.Username);
-        if (user == null || await userManager.CheckPasswordAsync(user, model.Password))
+        var user = await userManager.FindByNameAsync(model.Username).ConfigureAwait(false);
+        if (user == null)
+        {
+            return null;
+        }
+
+        if (!await userManager.CheckPasswordAsync(user, model.Password).ConfigureAwait(false))
         {
             return null;
         }
@@ -48,7 +55,7 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<RegisterStatus> Register([FromBody] RegisterDto model)
+    public async Task<RegisterStatus> RegisterAsync([FromBody] RegisterDto model)
     {
         var userExists = await userManager.FindByNameAsync(model.Username);
         if (userExists != null)
