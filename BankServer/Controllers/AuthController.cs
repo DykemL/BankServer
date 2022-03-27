@@ -1,4 +1,4 @@
-﻿using BankServer.Controllers.Types;
+﻿using BankServer.Helpers;
 using BankServer.Models.DtoModels;
 using BankServer.Models.Roles;
 using BankServer.Services.Auth;
@@ -8,6 +8,7 @@ namespace BankServer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Produces(HttpHeaders.JsonContentHeader)]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService authService;
@@ -39,19 +40,19 @@ public class AuthController : ControllerBase
         var registerStatus = await authService.RegisterAsync(model, new [] { UserRoles.User });
         if (registerStatus == RegisterStatus.AlreadyExists)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response(ResponseStatus.Error, "Пользователь уже существует"));
+            return BadRequest("Пользователь уже существует");
         }
 
         if (registerStatus == RegisterStatus.Error)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response(ResponseStatus.Error, "Не удалось зарегистрировать пользователя"));
+            return BadRequest("Не удалось зарегистрировать пользователя");
         }
 
         if (registerStatus == RegisterStatus.Success)
         {
-            return Ok(new Response(ResponseStatus.Success, "Пользователь успешно зарегистрирован"));
+            return Ok("Пользователь успешно зарегистрирован");
         }
 
-        return Ok(new Response(ResponseStatus.Error, "Неизвестная ошибка"));
+        return BadRequest("Неизвестная ошибка");
     }
 }

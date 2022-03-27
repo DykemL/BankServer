@@ -1,7 +1,7 @@
-﻿using BankServer.Controllers.Types;
-using BankServer.Extentions;
+﻿using BankServer.Extentions;
+using BankServer.Helpers;
+using BankServer.Models.DtoModels;
 using BankServer.Models.Roles;
-using BankServer.Providers;
 using BankServer.Services;
 using BankServer.Services.Account;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +12,7 @@ namespace BankServer.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = UserRoles.User)]
+[Produces(HttpHeaders.JsonContentHeader)]
 public class AccountController : ControllerBase
 {
     private readonly AccountService accountService;
@@ -37,8 +38,8 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet]
-    [Route("GetAll")]
-    public async Task<IActionResult> GetAllAsync()
+    [Route("All")]
+    public async Task<ActionResult<AccountInfo[]>> GetAllUserAccountsAsync()
     {
         var userId = User.GetId();
         var accounts = await accountService.GetAccounts(userId);
@@ -52,7 +53,7 @@ public class AccountController : ControllerBase
         var currentUserAccounts = await accountService.GetAccounts(User.GetId());
         if (!currentUserAccounts.Select(x => x.AccountId).Contains(accountFromId))
         {
-            return BadRequest(new Response(ResponseStatus.Forbidden, "Можно переводить деньги только со своих счетов"));
+            return BadRequest("Можно переводить деньги только со своих счетов");
         }
 
         var transferResult = await accountService.TryTransferMoneyFromToAccount(amount, accountFromId, accountToId);

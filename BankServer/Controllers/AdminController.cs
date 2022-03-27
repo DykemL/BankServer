@@ -1,4 +1,6 @@
-﻿using BankServer.Models.Roles;
+﻿using BankServer.Controllers.Types;
+using BankServer.Helpers;
+using BankServer.Models.Roles;
 using BankServer.Services;
 using BankServer.Services.Account;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +11,7 @@ namespace BankServer.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = UserRoles.Admin)]
+[Produces(HttpHeaders.JsonContentHeader)]
 public class AdminController : ControllerBase
 {
     private readonly AccountService accountService;
@@ -21,16 +24,16 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet]
-    [Route("GetUser")]
-    public async Task<IActionResult> GetUserAsync(Guid userId)
+    [Route("User")]
+    public async Task<ActionResult<UserInfo>> GetUserAsync(Guid userId)
         => Ok(await userService.GetUser(userId));
 
     [HttpGet]
-    [Route("GetAllUsers")]
-    public async Task<IActionResult> GetAllUsersAsync()
+    [Route("AllUsers")]
+    public async Task<ActionResult<UserInfo[]>> GetAllUsersAsync()
         => Ok(await userService.GetAllUsers());
 
-    [HttpGet]
+    [HttpPatch]
     [Route("AddMoneyToAccount")]
     public async Task<IActionResult> AddMoneyToAccountAsync(Guid accountId, decimal amount)
     {

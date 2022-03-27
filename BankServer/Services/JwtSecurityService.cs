@@ -9,18 +9,18 @@ public class JwtSecurityService : IJwtSecurityService
 {
     private readonly TimeSpan timeToLive = TimeSpan.FromHours(3);
 
-    private readonly Settings settings;
+    private readonly AppSettings appSettings;
 
-    public JwtSecurityService(Settings settings)
-        => this.settings = settings;
+    public JwtSecurityService(AppSettings appSettings)
+        => this.appSettings = appSettings;
 
-    public JwtSecurityToken GetToken(List<Claim> authClaims)
+    public JwtSecurityToken CreateToken(List<Claim> authClaims)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.JwtAuthSecretKey));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JwtAuthSecretKey));
 
         var token = new JwtSecurityToken(
-            settings.JwtAuthValidIssuer,
-            settings.JwtAuthValidAudience,
+            appSettings.JwtAuthValidIssuer,
+            appSettings.JwtAuthValidAudience,
             expires: DateTime.Now.Add(timeToLive),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)

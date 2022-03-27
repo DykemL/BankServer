@@ -44,7 +44,7 @@ public class AuthService : IAuthService
             authClaims.Add(new Claim(ClaimTypes.Role, userRole));
         }
 
-        var token = jwtSecurityService.GetToken(authClaims);
+        var token = jwtSecurityService.CreateToken(authClaims);
 
         return new LoginResult
         {

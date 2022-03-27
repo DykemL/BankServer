@@ -1,7 +1,7 @@
-﻿using BankServer.Models.DbEntities;
+﻿using BankServer.Helpers;
+using BankServer.Models.DbEntities;
 using BankServer.Models.DtoModels;
 using BankServer.Models.Roles;
-using BankServer.Providers;
 using BankServer.Services.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +13,17 @@ public class AppDbInitializer
     private readonly IAuthService authService;
     private readonly RoleManager<IdentityRole> roleManager;
     private readonly AppDbContext appDbContext;
-    private readonly Settings settings;
+    private readonly AppSettings appSettings;
 
     public AppDbInitializer(IAuthService authService,
                             RoleManager<IdentityRole> roleManager,
                             AppDbContext appDbContext,
-                            Settings settings)
+                            AppSettings appSettings)
     {
         this.authService = authService;
         this.roleManager = roleManager;
         this.appDbContext = appDbContext;
-        this.settings = settings;
+        this.appSettings = appSettings;
     }
 
     public static async Task InitializeAsync(WebApplication builder)
@@ -69,9 +69,9 @@ public class AppDbInitializer
     {
         var registerDto = new RegisterDto()
         {
-            Username = settings.AdminLogin,
-            Email = settings.AdminEmail,
-            Password = settings.AdminPassword
+            Username = appSettings.AdminLogin,
+            Email = appSettings.AdminEmail,
+            Password = appSettings.AdminPassword
         };
         await authService.RegisterAsync(registerDto, new[] { UserRoles.User, UserRoles.Admin });
     }

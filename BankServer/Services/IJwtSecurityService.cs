@@ -5,5 +5,5 @@ namespace BankServer.Services;
 
 public interface IJwtSecurityService
 {
-    JwtSecurityToken GetToken(List<Claim> authClaims);
+    JwtSecurityToken CreateToken(List<Claim> authClaims);
 }

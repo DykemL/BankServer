@@ -1,6 +1,6 @@
 ﻿namespace BankServer;
 
-public class Settings
+public class AppSettings
 { 
     public string? DatabaseConnectionString { get; set; }
 

@@ -13,13 +13,13 @@ public static class ApplicationConfigurator
     private const string AuthHeader = "Authorization";
     private const string AuthType = "Bearer";
 
-    public static Settings GetConfigurationSettings(WebApplicationBuilder builder)
+    public static AppSettings GetConfigurationSettings(WebApplicationBuilder builder)
     {
         var configuration = builder.Configuration;
         var databaseConnectionString = Environment.GetEnvironmentVariable("DatabaseConnectionString")
                                        ?? configuration.GetConnectionString("RemoteConnection")
                                        ?? configuration.GetConnectionString("DefaultConnection");
-        return new Settings()
+        return new AppSettings()
         {
             DatabaseConnectionString = databaseConnectionString,
             JwtAuthValidAudience = configuration["JwtAuth:ValidAudience"],
@@ -45,7 +45,7 @@ public static class ApplicationConfigurator
                .AddDefaultTokenProviders();
     }
 
-    public static void ConfigureJwt(WebApplicationBuilder builder, Settings settings)
+    public static void ConfigureJwt(WebApplicationBuilder builder, AppSettings appSettings)
     {
         builder.Services.AddAuthentication(options =>
         {
@@ -60,9 +60,9 @@ public static class ApplicationConfigurator
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidAudience = settings.JwtAuthValidAudience,
-                ValidIssuer = settings.JwtAuthValidIssuer,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.JwtAuthSecretKey!))
+                ValidAudience = appSettings.JwtAuthValidAudience,
+                ValidIssuer = appSettings.JwtAuthValidIssuer,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JwtAuthSecretKey!))
             };
         });
     }

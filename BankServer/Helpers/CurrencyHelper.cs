@@ -1,6 +1,6 @@
 ﻿using BankServer.Models.DbEntities;
 
-namespace BankServer.Providers;
+namespace BankServer.Helpers;
 
 public class CurrencyHelper
 {
