@@ -3,6 +3,7 @@ using BankServer.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var settings = ApplicationConfigurator.GetConfigurationSettings(builder);
 builder.Services.AddScoped(_ => settings);
 

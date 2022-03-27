@@ -1,5 +1,4 @@
-﻿using BankServer.Controllers.Exceptions;
-using BankServer.Models;
+﻿using BankServer.Models;
 using BankServer.Models.DbEntities;
 using BankServer.Models.DtoModels;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +47,11 @@ public class AccountService
         }).ToArrayAsync();
     }
 
+    public async Task<bool> TryRemoveAccount(Guid accountId)
+    {
+        return false;
+    }
+
     public async Task<bool> TryTransferMoneyFromToAccount(decimal amount, Guid accountFromId, Guid accountToId)
     {
         var accountFrom = await appDbContext.Accounts!.Include(x => x.Currency)
@@ -56,29 +60,26 @@ public class AccountService
                                     .SingleOrDefaultAsync(x => x.Id == accountToId);
 
         var amountToConverted = currencyService.ConvertCurrency(amount, accountFrom!.Currency, accountTo!.Currency);
-        await AddMoneyToAccount(accountFromId, -amount);
-        try
+        var wasTransferSucceeded = await TryAddMoneyToAccountAsync(accountToId, amountToConverted);
+        if (!wasTransferSucceeded)
         {
-            await AddMoneyToAccount(accountToId, amountToConverted);
-        }
-        catch (Exception)
-        {
-            await AddMoneyToAccount(accountFromId, amount);
             return false;
         }
 
+        await TryAddMoneyToAccountAsync(accountFromId, -amount);
         return true;
     }
 
-    public async Task AddMoneyToAccount(Guid accountId, decimal amount)
+    public async Task<bool> TryAddMoneyToAccountAsync(Guid accountId, decimal amount)
     {
         var account = await appDbContext.Accounts!.FindAsync(accountId);
         if (account == null)
         {
-            throw new NotFoundException();
+            return false;
         }
 
         account.Money += amount;
         await appDbContext.SaveChangesAsync();
+        return true;
     }
 }

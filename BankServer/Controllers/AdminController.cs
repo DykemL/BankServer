@@ -26,18 +26,18 @@ public class AdminController : ControllerBase
     [HttpGet]
     [Route("User")]
     public async Task<ActionResult<UserInfo>> GetUserAsync(Guid userId)
-        => Ok(await userService.GetUser(userId));
+        => Ok(await userService.GetUserAsync(userId));
 
     [HttpGet]
     [Route("AllUsers")]
     public async Task<ActionResult<UserInfo[]>> GetAllUsersAsync()
-        => Ok(await userService.GetAllUsers());
+        => Ok(await userService.GetAllUsersAsync());
 
     [HttpPatch]
     [Route("AddMoneyToAccount")]
     public async Task<IActionResult> AddMoneyToAccountAsync(Guid accountId, decimal amount)
     {
-        await accountService.AddMoneyToAccount(accountId, amount);
+        await accountService.TryAddMoneyToAccountAsync(accountId, amount);
         return Ok();
     }
 }

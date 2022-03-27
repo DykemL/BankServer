@@ -12,7 +12,7 @@ public class UserService
     public UserService(UserManager<User> userManager)
         => this.userManager = userManager;
 
-    public async Task<UserInfo> GetUser(Guid userId)
+    public async Task<UserInfo> GetUserAsync(Guid userId)
     {
         var user = await userManager.Users.SingleOrDefaultAsync(x => x.Id == userId.ToString());
         return new UserInfo()
@@ -23,7 +23,7 @@ public class UserService
         };
     }
 
-    public async Task<UserInfo[]> GetAllUsers()
+    public async Task<UserInfo[]> GetAllUsersAsync()
         => await userManager.Users.Select(x => new UserInfo
         {
             Id = x.Id,

@@ -37,7 +37,7 @@ public class AuthController : ControllerBase
     [Route("Register")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterDto model)
     {
-        var registerStatus = await authService.RegisterAsync(model, new [] { UserRoles.User });
+        var registerStatus = await authService.RegisterAsync(model, UserRoles.User);
         if (registerStatus == RegisterStatus.AlreadyExists)
         {
             return BadRequest("Пользователь уже существует");

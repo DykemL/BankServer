@@ -53,7 +53,7 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<RegisterStatus> RegisterAsync(RegisterDto model, string[] roles)
+    public async Task<RegisterStatus> RegisterAsync(RegisterDto model, params string[] roles)
     {
         var userExists = await userManager.FindByNameAsync(model.Username);
         if (userExists != null)

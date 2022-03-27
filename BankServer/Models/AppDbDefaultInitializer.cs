@@ -73,7 +73,7 @@ public class AppDbInitializer
             Email = appSettings.AdminEmail,
             Password = appSettings.AdminPassword
         };
-        await authService.RegisterAsync(registerDto, new[] { UserRoles.User, UserRoles.Admin });
+        await authService.RegisterAsync(registerDto, UserRoles.User, UserRoles.Admin);
     }
 
     private async Task TryAddCurrency(Currency? newCurrency)
