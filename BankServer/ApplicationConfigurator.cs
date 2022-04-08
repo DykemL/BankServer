@@ -19,12 +19,14 @@ public static class ApplicationConfigurator
         var databaseConnectionString = Environment.GetEnvironmentVariable("DatabaseConnectionString")
                                        ?? configuration.GetConnectionString("RemoteConnection")
                                        ?? configuration.GetConnectionString("DefaultConnection");
+        var jwtAuthSecretKey = Environment.GetEnvironmentVariable("JwtAuthSecretKey")
+                               ?? configuration["JwtAuth:SecretKey"];
         return new AppSettings()
         {
             DatabaseConnectionString = databaseConnectionString,
             JwtAuthValidAudience = configuration["JwtAuth:ValidAudience"],
             JwtAuthValidIssuer = configuration["JwtAuth:ValidIssuer"],
-            JwtAuthSecretKey = configuration["JwtAuth:SecretKey"],
+            JwtAuthSecretKey = jwtAuthSecretKey,
             AdminLogin = configuration["AuthData:AdminLogin"],
             AdminEmail = configuration["AuthData:AdminEmail"],
             AdminPassword = configuration["AuthData:AdminPassword"]
