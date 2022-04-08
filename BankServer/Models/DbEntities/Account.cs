@@ -5,6 +5,8 @@ namespace BankServer.Models.DbEntities;
 public class Account : DbEntity
 {
     [Required]
+    public string AccountNumber { get; set; }
+    [Required]
     public User User { get; set; }
     [Required]
     public decimal Money { get; set; }

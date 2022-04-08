@@ -3,7 +3,7 @@ using BankServer.Helpers;
 using BankServer.Models.DtoModels;
 using BankServer.Models.Roles;
 using BankServer.Services;
-using BankServer.Services.Account;
+using BankServer.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +15,8 @@ namespace BankServer.Controllers;
 [Produces(HttpHeaders.JsonContentHeader)]
 public class AccountController : ControllerBase
 {
+    private const int NotEnoughMoneyCode = 418;
+
     private readonly AccountService accountService;
     private readonly CurrencyService currencyService;
 
@@ -25,10 +27,10 @@ public class AccountController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> AddNewEmptyAccountAsync(string currencyName = CurrencyHelper.Rubble)
+    public async Task<IActionResult> AddNewEmptyAccountAsync([FromBody] AddNewEmptyAccountDto addNewEmptyAccountDto)
     {
         var userId = User.GetId();
-        var rubbleCurrency = await currencyService.GetCurrency(currencyName);
+        var rubbleCurrency = await currencyService.GetCurrency(addNewEmptyAccountDto.CurrencyName);
         var wasAdded = await accountService.TryAddNewEmptyAccountAsync(userId, rubbleCurrency!);
         if (!wasAdded)
         {
@@ -46,20 +48,44 @@ public class AccountController : ControllerBase
         return Ok(accounts);
     }
 
+    [HttpGet]
+    [Route("GetByNumber")]
+    public async Task<ActionResult<AccountInfo>> GetAccountInfoByNumberAsync([FromBody] GetAccountInfoByNumberDto getAccountInfoByNumberDto)
+        => await accountService.GetAccountInfoByNumber(getAccountInfoByNumberDto.AccountNumber);
+
     [HttpPatch]
     [Route("TransferMoney")]
-    public async Task<IActionResult> TransferMoneyAsync(Guid accountFromId, Guid accountToId, decimal amount)
+    public async Task<IActionResult> TransferMoneyAsync([FromBody] TransferMoneyDto transferMoneyDto)
     {
         var currentUserAccounts = await accountService.GetAccounts(User.GetId());
-        if (!currentUserAccounts.Select(x => x.AccountId).Contains(accountFromId))
+        if (!currentUserAccounts.Select(x => x.AccountNumber).Contains(transferMoneyDto.AccountFromNumber))
         {
             return BadRequest("Можно переводить деньги только со своих счетов");
         }
 
-        var transferResult = await accountService.TryTransferMoneyFromToAccount(amount, accountFromId, accountToId);
-        if (!transferResult)
+        var transferResult = await accountService.TryTransferMoneyFromToAccount(transferMoneyDto.Amount,
+                                                                                transferMoneyDto.AccountFromNumber,
+                                                                                transferMoneyDto.AccountToNumber);
+        if (transferResult == TransferMoneyResult.Failed)
         {
             return Problem("Произошла проблема с переводом. Перевод не выполнен");
+        }
+
+        if (transferResult == TransferMoneyResult.NotEnoughMoney)
+        {
+            return Problem("Недостаточно средств для перевода", statusCode: NotEnoughMoneyCode);
+        }
+
+        return Ok();
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Close([FromBody] CloseAccountDto closeAccountDto)
+    {
+        var wasRemoved = await accountService.TryRemoveAccount(closeAccountDto.AccountNumber);
+        if (!wasRemoved)
+        {
+            return BadRequest("Нельзя закрывать счета с остатками");
         }
 
         return Ok();

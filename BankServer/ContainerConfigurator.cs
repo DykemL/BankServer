@@ -1,6 +1,6 @@
 ﻿using BankServer.Models;
 using BankServer.Services;
-using BankServer.Services.Account;
+using BankServer.Services.Accounts;
 using BankServer.Services.Auth;
 
 namespace BankServer;

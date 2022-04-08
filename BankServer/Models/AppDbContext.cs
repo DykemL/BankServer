@@ -16,6 +16,7 @@ public class AppDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Currency>().HasIndex(x => new { x.Name });
+        modelBuilder.Entity<Account>().HasIndex(x => x.AccountNumber).IsUnique();
         base.OnModelCreating(modelBuilder);
     }
 }

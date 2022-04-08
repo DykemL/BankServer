@@ -12,20 +12,23 @@ public class CurrencyHelper
         => new()
         {
             Name = Rubble,
-            Power = 1
+            NameRus = "Рубль",
+            Power = 100
         };
 
     public static Currency? GetDefaultDollarCurrency()
         => new()
         {
             Name = Dollar,
-            Power = 100
+            NameRus = "Доллар",
+            Power = 5000
         };
 
     public static Currency? GetDefaultEuroCurrency()
         => new()
         {
             Name = Euro,
-            Power = 110
+            NameRus = "Евро",
+            Power = 6000
         };
 }

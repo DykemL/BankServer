@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220326025556_Initial")]
+    [Migration("20220408204758_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,8 +30,15 @@ namespace BankServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Money")
                         .HasColumnType("numeric");
@@ -42,9 +49,38 @@ namespace BankServer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountNumber")
+                        .IsUnique();
+
+                    b.HasIndex("CurrencyId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("BankServer.Models.DbEntities.Currency", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameRus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("Power")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("BankServer.Models.DbEntities.User", b =>
@@ -245,11 +281,19 @@ namespace BankServer.Migrations
 
             modelBuilder.Entity("BankServer.Models.DbEntities.Account", b =>
                 {
+                    b.HasOne("BankServer.Models.DbEntities.Currency", "Currency")
+                        .WithMany("Accounts")
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BankServer.Models.DbEntities.User", "User")
                         .WithMany("Accounts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Currency");
 
                     b.Navigation("User");
                 });
@@ -303,6 +347,11 @@ namespace BankServer.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BankServer.Models.DbEntities.Currency", b =>
+                {
+                    b.Navigation("Accounts");
                 });
 
             modelBuilder.Entity("BankServer.Models.DbEntities.User", b =>

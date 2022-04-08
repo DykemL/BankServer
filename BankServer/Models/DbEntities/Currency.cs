@@ -4,12 +4,14 @@ namespace BankServer.Models.DbEntities;
 
 public class Currency : DbEntity
 {
-    private const decimal DefaultPower = 1;
+    private const long DefaultPower = 1;
 
     [Required]
     public string Name { get; set; }
     [Required]
-    public decimal Power { get; set; }
+    public string NameRus { get; set; }
+    [Required]
+    public long Power { get; set; }
 
     public ICollection<Account> Accounts { get; set; }
 

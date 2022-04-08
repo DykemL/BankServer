@@ -28,6 +28,10 @@ namespace BankServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -42,6 +46,9 @@ namespace BankServer.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountNumber")
+                        .IsUnique();
 
                     b.HasIndex("CurrencyId");
 
@@ -60,8 +67,12 @@ namespace BankServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Power")
-                        .HasColumnType("numeric");
+                    b.Property<string>("NameRus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("Power")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

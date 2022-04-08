@@ -23,6 +23,6 @@ public class CurrencyService
             Power = x.Power
         }).ToArrayAsync();
 
-    public decimal ConvertCurrency(decimal amount, Currency currencyFrom, Currency currencyTo)
+    public long ConvertCurrency(long amount, Currency currencyFrom, Currency currencyTo)
         => amount * currencyFrom.Power / currencyTo.Power;
 }

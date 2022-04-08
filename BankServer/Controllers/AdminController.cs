@@ -2,7 +2,7 @@
 using BankServer.Helpers;
 using BankServer.Models.Roles;
 using BankServer.Services;
-using BankServer.Services.Account;
+using BankServer.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,6 +32,14 @@ public class AdminController : ControllerBase
     [Route("AllUsers")]
     public async Task<ActionResult<UserInfo[]>> GetAllUsersAsync()
         => Ok(await userService.GetAllUsersAsync());
+
+    [HttpPatch]
+    [Route("AddMoneyToAccountByNumber")]
+    public async Task<IActionResult> AddMoneyToAccountByNumberAsync(string accountNumber, decimal amount)
+    {
+        await accountService.TryAddMoneyToAccountByNumberAsync(accountNumber, amount);
+        return Ok();
+    }
 
     [HttpPatch]
     [Route("AddMoneyToAccount")]
