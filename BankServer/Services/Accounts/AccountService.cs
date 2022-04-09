@@ -60,7 +60,7 @@ public class AccountService
         return accounts.Select(ToAccountInfo).ToArray();
     }
 
-    public async Task<bool> TryRemoveAccount(string accountNumber)
+    public async Task<bool> TryRemoveAccountAsync(string accountNumber)
     {
         var account = await appDbContext.Accounts?.SingleOrDefaultAsync(x => x.AccountNumber == accountNumber)!;
         if (account?.Money > 0)

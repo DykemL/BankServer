@@ -45,7 +45,7 @@ public class AccountController : ControllerBase
     {
         var userId = User.GetId();
         var accounts = await accountService.GetAccounts(userId);
-        return Ok(accounts);
+        return Ok(accounts.OrderBy(x => x.CreatedDateTime));
     }
 
     [HttpGet]
@@ -80,9 +80,9 @@ public class AccountController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Close([FromBody] CloseAccountDto closeAccountDto)
+    public async Task<IActionResult> CloseAsync([FromBody] CloseAccountDto closeAccountDto)
     {
-        var wasRemoved = await accountService.TryRemoveAccount(closeAccountDto.AccountNumber);
+        var wasRemoved = await accountService.TryRemoveAccountAsync(closeAccountDto.AccountNumber);
         if (!wasRemoved)
         {
             return BadRequest("Нельзя закрывать счета с остатками");
